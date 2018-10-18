@@ -1,3 +1,9 @@
 const app = require('./src/server');
+const { port } = require('./constants');
+const { deleteSubscriptions, subscribe } = require('./src/subscriptions');
 
-app.listen(3000, () => console.log('listening at 3000'));
+deleteSubscriptions().then(async () => {
+  // await subscribe();
+});
+
+app.listen(port, () => console.log(`listening at ${port}`));
