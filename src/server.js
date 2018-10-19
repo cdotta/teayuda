@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const observer = require('./observer').init({some_config_parameter: 12});
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
@@ -20,7 +21,9 @@ app.get('/nextBus/:idLinea/:idParada', (req, res) => {
 });
 
 app.post('/callback', (req, res) => {
-  console.log(req.body);
+  observer.update(req.body.data[0]).then(async () => {
+    // do something when bus update is successful
+  });
   res.send({ status: 'OK' })
 });
 
