@@ -2,8 +2,7 @@ const express = require('express');
 const app = express();
 const Bus = require('./bus');
 const bodyParser = require('body-parser');
-
-const buses = {};
+const busesManager = require('./busesManager');
 
 app.use(bodyParser.json());
 
@@ -23,23 +22,7 @@ app.get('/nextBus/:idLinea/:idParada', (req, res) => {
 });
 
 app.post('/callback', (req, res) => {
-  req.body.data.forEach(({id, linea, location, timestamp}) => {
-    const params = {
-      id: id,
-      line: linea.value,
-      x: location.value.coordinates[0],
-      y: location.value.coordinates[1],
-      timestamp: timestamp.value,
-    };
-    if (buses[id]) {
-      buses[id].update(params);
-    } else {
-      buses[id] = new Bus(params);
-      buses[id].on('bus:update', (event) => {
-        console.log(event);
-      })
-    }
-  });
+  req.body.data.forEach( busesManager.onBusUpdate );
   res.send({ status: 'OK' })
 });
 
