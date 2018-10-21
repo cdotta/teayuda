@@ -13,7 +13,10 @@ function refreshBus(params) {
 
 function refreshStops(bus) {
     const line = stopsFactory.getLines()[bus.line];
-    if (!line) return;
+    if (!line) {
+        console.log(`There is no information about the line ${bus.line}`)
+        return;
+    };
 
     if (!bus.stop) {
         for (var i = 0; i < line.length; i++) {

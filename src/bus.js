@@ -13,8 +13,7 @@ class Bus {
 
     update({line, long, lat, timestamp}) {
         if (this.line !== line) {
-            this._stop = null;
-            // console.log(`Bus ${this.id} line changed from ${this.line} to ${line}`);
+            this.stop = null;
         }
         this.line = line;
         this.long = long;
@@ -23,8 +22,18 @@ class Bus {
     }
 
     set stop(value) {
-        if (this.id !== 241) { console.log(`Bus ${this.id} stop changed from ${this._stop ? this._stop.id : null} to ${value.id}`) };
-        this._stop = value;
+        // if (this.id !== 241) { console.log(`Bus ${this.id} stop changed from ${this._stop ? this._stop.id : null} to ${value.id}`) };
+        if (this.stop !== value) {
+            if (this.stop) {
+                this.stop.removeBus(this);
+            }
+
+            this._stop = value;
+
+            if (this.stop) {
+                this.stop.addBus(this);
+            }
+        }
     }
 
     get stop() {
@@ -37,3 +46,4 @@ class Bus {
 }
 
 module.exports = Bus;
+

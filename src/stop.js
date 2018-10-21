@@ -15,6 +15,7 @@ class Stop {
         this.long = long;
         this.lat = lat;
         this.links = {};
+        this.buses = [];
     }
 
     addFrom(fromStop, line) {
@@ -23,6 +24,14 @@ class Stop {
         } else {
             this.links[fromStop.id] = new Link(fromStop, line);
         }
+    }
+
+    addBus(bus) {
+        this.buses.push(bus);
+    }
+
+    removeBus(bus) {
+        this.buses = this.buses.filter(({ id }) => id !== bus.id);
     }
 }
 
