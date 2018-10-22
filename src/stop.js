@@ -28,6 +28,7 @@ class Stop {
 
     addBus(bus, fromStop) {
         if (fromStop) {
+            console.log(`Bus ${bus} moved from ${fromStop} to ${this}`);
             fromStop.removeBus(bus);
         }
         bus.stop = this;
@@ -37,6 +38,10 @@ class Stop {
     removeBus(bus) {
         this.buses = this.buses.filter(({ id }) => id !== bus.id);
         bus.stop = null;
+    }
+
+    toString() {
+        return this.id;
     }
 }
 

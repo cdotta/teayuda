@@ -24,6 +24,10 @@ class Bus {
     near(stop) {
         return distance({ lat1: stop.lat, lon1: stop.long, lat2: this.lat, lon2: this.long}) < nearStopRadius;
     }
+
+    toString() {
+        return `{id: ${this.id}, line: ${this.line}}`;
+    }
 }
 
 module.exports = Bus;
