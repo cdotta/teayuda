@@ -26,12 +26,17 @@ class Stop {
         }
     }
 
-    addBus(bus) {
+    addBus(bus, fromStop) {
+        if (fromStop) {
+            fromStop.removeBus(bus);
+        }
+        bus.stop = this;
         this.buses.push(bus);
     }
 
     removeBus(bus) {
         this.buses = this.buses.filter(({ id }) => id !== bus.id);
+        bus.stop = null;
     }
 }
 

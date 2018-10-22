@@ -22,7 +22,7 @@ function refreshStops(bus) {
         for (var i = 0; i < line.length; i++) {
             const stop = line[i];
             if (bus.near(stop)) {
-                bus.stop = stop;
+                stop.addBus(bus, null);
                 break;
             }
         }
@@ -31,7 +31,7 @@ function refreshStops(bus) {
         for (var i = stopIndex + 1; i < line.length; i++) {
             const stop = line[i];
             if (bus.near(stop)) {
-                bus.stop = stop;
+                stop.addBus(stop, bus.stop);
                 break;
             }
         }

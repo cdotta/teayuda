@@ -8,36 +8,17 @@ class Bus {
         this.long = long;
         this.lat = lat;
         this.timestamp = timestamp;
-        this._stop = null;
+        this.stop = null;
     }
 
     update({line, long, lat, timestamp}) {
-        if (this.line !== line) {
-            this.stop = null;
+        if (this.line !== line && this.stop) {
+            this.stop.removeBus(this);
         }
         this.line = line;
         this.long = long;
         this.lat = lat;
         this.timestamp = timestamp;
-    }
-
-    set stop(value) {
-        // if (this.id !== 241) { console.log(`Bus ${this.id} stop changed from ${this._stop ? this._stop.id : null} to ${value.id}`) };
-        if (this.stop !== value) {
-            if (this.stop) {
-                this.stop.removeBus(this);
-            }
-
-            this._stop = value;
-
-            if (this.stop) {
-                this.stop.addBus(this);
-            }
-        }
-    }
-
-    get stop() {
-        return this._stop;
     }
 
     near(stop) {
