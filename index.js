@@ -1,13 +1,13 @@
 const app = require('./src/server');
 const { orionIP, port } = require('./constants');
-const stopsFactory = require('./src/stopsFactory');
+const graphFactory = require('./src/graphFactory');
 const { deleteSubscriptions, subscribe } = require('./src/subscriptions');
 const axios = require('axios');
 
 axios.get(`http://${orionIP}/api/trayectosporlinea`).then(({ data }) => {
-  stopsFactory.load(data);
+  graphFactory.initialize(data);
   
-  console.log(`Graph loaded with ${Object.keys(stopsFactory.getStops()).length} stops`);
+  console.log(`Graph loaded with ${graphFactory.countStops()} stops`);
 
   deleteSubscriptions().then(async () => {
     await subscribe();

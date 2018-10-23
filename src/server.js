@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const Bus = require('./bus');
 const bodyParser = require('body-parser');
-const busesManager = require('./busesManager');
+const graphFactory = require('./graphFactory');
 
 app.use(bodyParser.json());
 
@@ -22,7 +22,7 @@ app.get('/nextBus/:idLinea/:idParada', (req, res) => {
 });
 
 app.post('/callback', (req, res) => {
-  req.body.data.forEach( busesManager.onBusUpdate );
+  req.body.data.forEach( graphFactory.update );
   res.send({ status: 'OK' })
 });
 
