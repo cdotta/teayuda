@@ -2,10 +2,22 @@ class Link {
     constructor(fromStop, line) {
         this.lines = [line];
         this.fromStop = fromStop;
+        this.times = [];
     }
 
     addLine(line) {
         this.lines.push(line);
+    }
+
+    addTime(time) {
+        this.times.push(time);
+    }
+
+    getEstimatedTime() {
+        const sum = this.times.reduce((accumulator, time) => {
+            return accumulator + time;
+        }, 0);
+        return sum / this.times.length;
     }
 }
 
@@ -30,8 +42,16 @@ class Stop {
         if (fromStop) {
             console.log(`Bus ${bus} moved from ${fromStop} to ${this}`);
             fromStop.removeBus(bus);
+
+            if (this.links[fromStop.id]) { // This means that the bus comes from the previous stop.
+                const deltaTime = bus.timestamp - bus.stopArrivalTime;
+                if (true) { // Here we can add conditions like when the delay is bigger than 20s discard
+                    this.links[fromStop.id].addTime(deltaTime);
+                }
+            }
         }
         bus.stop = this;
+        bus.stopArrivalTime = bus.timestamp;
         this.buses.push(bus);
     }
 

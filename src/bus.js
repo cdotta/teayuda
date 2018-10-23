@@ -9,6 +9,7 @@ class Bus {
         this.lat = lat;
         this.timestamp = timestamp;
         this.stop = null;
+        this.stopArrivalTime = null;
     }
 
     update({line, long, lat, timestamp}) {
