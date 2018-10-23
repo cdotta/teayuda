@@ -45,6 +45,10 @@ function initialize({trayectos}) {
     }
 }
 
+function countStops() {
+    return Object.keys(stops).length;
+}
+
 // This function updates a bus given params structured as:
 // {id, line, long, lat, timestamp}
 function updateBus(params) {
@@ -97,12 +101,23 @@ function update({id, linea, location, timestamp}) {
     reassignStop(buses[id]);
 }
 
-function countStops() {
-    return Object.keys(stops).length;
+function calculateETA({ lineId, stopId }) {
+    // Do stuff
+    return {
+        id_linea: lineId,
+        id_parada: stopId,
+        id_bus: 314,
+        location: {
+            type: "Point",
+            coordinates: [-56.19539,-34.90608],
+        },
+        tea: 150,
+    }
 }
 
 module.exports = {
     initialize,
     update,
     countStops,
+    calculateETA,
 }

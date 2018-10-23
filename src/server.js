@@ -9,16 +9,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => res.send({ name: 'Hello World!' }));
 
 app.get('/nextBus/:idLinea/:idParada', (req, res) => {
-  res.send({
-    id_linea: req.params.idLinea,
-    id_parada: req.params.idParada,
-    id_bus: 314,
-    location: {
-      type: 'Point',
-      coordinates: [-59.19539, -34.90608],
-    },
-    tea: 150,
-  });
+  res.send( graphFactory.calculateETA({lineId: req.params.idLinea, stopId: req.params.idParada}) );
 });
 
 app.post('/callback', (req, res) => {
