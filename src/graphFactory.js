@@ -110,9 +110,14 @@ function _calculateTimeBetweenStops( prevStop, stop ) {
 }
 
 function _calculateETA({ lineId, stop }) {
+    if (!stop) {
+        return { tea: -1 };
+    }
+
     const bus = stop.buses.find( (bus) => {
         return bus.line === lineId;
     });
+
     if (bus) {
         return {
             id_linea: lineId,
@@ -127,7 +132,9 @@ function _calculateETA({ lineId, stop }) {
     } else {
         const prevStop = stop.findPrevStopByLineId(lineId);
         const result = _calculateETA( { lineId: lineId, stop: prevStop } );
-        result.tea += _calculateTimeBetweenStops( prevStop, stop );
+        if (result.tea !== -1) {
+            result.tea += _calculateTimeBetweenStops( prevStop, stop );
+        }
         return result;
     }
 }
