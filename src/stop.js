@@ -60,6 +60,13 @@ class Stop {
         bus.stop = null;
     }
 
+    findPrevStopByLineId(lineId) {
+        const link = Object.values(this.links).find( (link) => {
+            return link.lines.indexOf(lineId) !== -1;
+        });
+        return (link ? link.fromStop : null);
+    }
+
     toString() {
         return this.id;
     }

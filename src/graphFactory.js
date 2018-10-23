@@ -101,18 +101,42 @@ function update({id, linea, location, timestamp}) {
     reassignStop(buses[id]);
 }
 
-function calculateETA({ lineId, stopId }) {
-    // Do stuff
-    return {
-        id_linea: lineId,
-        id_parada: stopId,
-        id_bus: 314,
-        location: {
-            type: "Point",
-            coordinates: [-56.19539,-34.90608],
-        },
-        tea: 150,
+function _calculateTimeFromBusToNextStop( bus ) {
+    return 50;
+}
+
+function _calculateTimeBetweenStops( prevStop, stop ) {
+    return 100;
+}
+
+function _calculateETA({ lineId, stop }) {
+    const bus = stop.buses.find( (bus) => {
+        return bus.line === lineId;
+    });
+    if (bus) {
+        return {
+            id_linea: lineId,
+            id_parada: stop.id,
+            id_bus: bus.id,
+            location: {
+                type: "Point",
+                coordinates: [bus.long, bus.lat],
+            },
+            tea: _calculateTimeFromBusToNextStop( bus ),
+        }
+    } else {
+        const prevStop = stop.findPrevStopByLineId(lineId);
+        const result = _calculateETA( { lineId: lineId, stop: prevStop } );
+        result.tea += _calculateTimeBetweenStops( prevStop, stop );
+        return result;
     }
+}
+
+function calculateETA({ lineId, stopId }) {
+    if (!lines[lineId]) return { error: "Line not found" };
+    if (!stops[stopId]) return { error: "Bus stop not found"};
+
+    return _calculateETA( { lineId: lineId, stop: stops[stopId] } );
 }
 
 module.exports = {
