@@ -83,6 +83,8 @@ function reassignStop(bus) {
     }
 }
 
+// This function updates information about the buses' locations
+// and reassigns them to new stops as they move
 function update({id, linea, location, timestamp}) {
     updateBus({
         id: id,
