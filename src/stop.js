@@ -14,10 +14,11 @@ class Link {
     }
 
     getEstimatedTime() {
-        const sum = this.times.reduce((accumulator, time) => {
-            return accumulator + time;
-        }, 0);
-        return sum / this.times.length;
+        return 60;
+        // const sum = this.times.reduce((accumulator, time) => {
+        //     return accumulator + time;
+        // }, 0);
+        // return sum / this.times.length;
     }
 }
 
@@ -45,7 +46,7 @@ class Stop {
 
             if (this.links[fromStop.id]) { // This means that the bus comes from the previous stop.
                 const deltaTime = bus.timestamp - bus.stopArrivalTime;
-                if (true) { // Here we can add conditions like when the delay is bigger than 20s discard
+                if (deltaTime <= 300 && deltaTime >= 15) {
                     this.links[fromStop.id].addTime(deltaTime);
                 }
             }
@@ -60,11 +61,19 @@ class Stop {
         bus.stop = null;
     }
 
-    findPrevStopByLineId(lineId) {
-        const link = Object.values(this.links).find( (link) => {
+    _findLinkToPrevStopByLineId(lineId) {
+        return Object.values(this.links).find( (link) => {
             return link.lines.indexOf(lineId) !== -1;
         });
-        return (link ? link.fromStop : null);
+    }
+
+    findPrevStopByLineId(lineId) {
+        const link = this._findLinkToPrevStopByLineId(lineId);
+        return link && link.fromStop;
+    }
+
+    getTimeFromPrevStop(prevStop) {
+        return this.links[prevStop.id] ? this.links[prevStop.id].getEstimatedTime() : -1;
     }
 
     toString() {

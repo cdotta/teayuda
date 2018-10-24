@@ -1,3 +1,5 @@
+const util = require('util');
+
 const Bus = require('./bus');
 const Stop = require('./stop');
 
@@ -63,7 +65,7 @@ function updateBus(params) {
 function reassignStop(bus) {
     const line = lines[bus.line];
     if (!line) {
-        console.log(`There is no information about the line ${bus.line}`)
+        console.log(`There is no information about line ${bus.line}`)
         return;
     };
 
@@ -77,6 +79,7 @@ function reassignStop(bus) {
         }
     } else {
         const stopIndex = line.indexOf(bus.stop);
+        // It always searches the next stops starting from the current stop.
         for (var i = stopIndex + 1; i < line.length; i++) {
             const stop = line[i];
             if (bus.near(stop)) {
@@ -101,24 +104,26 @@ function update({id, linea, location, timestamp}) {
     reassignStop(buses[id]);
 }
 
-function _calculateTimeFromBusToNextStop( bus ) {
+function _calculateTimeFromBusToNextStop( bus, nextStop ) {
+    // Implement NASA's function
     return 50;
-}
-
-function _calculateTimeBetweenStops( prevStop, stop ) {
-    return 100;
 }
 
 function _calculateETA({ lineId, stop }) {
     if (!stop) {
+        console.log(`Didn't find bus for line ${lineId}`);
         return { tea: -1 };
     }
+
+    console.log(`_calculateETA({${lineId}, ${stop.id}})`);
 
     const bus = stop.buses.find( (bus) => {
         return bus.line === lineId;
     });
 
     if (bus) {
+        console.log(`Bus ${bus.id} found at stop ${stop.id}`);
+        // filter out the bus if timestamp is too old
         return {
             id_linea: lineId,
             id_parada: stop.id,
@@ -127,23 +132,45 @@ function _calculateETA({ lineId, stop }) {
                 type: "Point",
                 coordinates: [bus.long, bus.lat],
             },
-            tea: _calculateTimeFromBusToNextStop( bus ),
+            tea: _calculateTimeFromBusToNextStop( bus, stop ),
         }
     } else {
         const prevStop = stop.findPrevStopByLineId(lineId);
         const result = _calculateETA( { lineId: lineId, stop: prevStop } );
+        console.log(util.inspect(result, {color: true}));
         if (result.tea !== -1) {
-            result.tea += _calculateTimeBetweenStops( prevStop, stop );
+            result.tea += stop.getTimeFromPrevStop(prevStop);
         }
         return result;
     }
 }
 
 function calculateETA({ lineId, stopId }) {
-    if (!lines[lineId]) return { error: "Line not found" };
-    if (!stops[stopId]) return { error: "Bus stop not found"};
+    const stop = stops[stopId];
 
-    return _calculateETA( { lineId: lineId, stop: stops[stopId] } );
+    if (!lines[lineId]) return { error: "Line not found" };
+    if (!stop) return { error: "Bus stop not found"};
+
+    const bus = stop.buses.find( (bus) => {
+        return bus.line === lineId;
+    });
+
+    if (bus) {
+        console.log(`Bus ${bus.id} just left the stop! (stopId = ${stopId})`);
+
+        return {
+            id_linea: lineId,
+            id_parada: stop.id,
+            id_bus: bus.id,
+            location: {
+                type: "Point",
+                coordinates: [bus.long, bus.lat],
+            },
+            tea: 0,
+        }
+    }
+    
+    return _calculateETA( { lineId: lineId, stop: stop } );
 }
 
 module.exports = {
