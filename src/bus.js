@@ -32,11 +32,15 @@ class Bus {
         }
 
         const od = distance({lat1: this.stop.lat, lon1: this.stop.long, lat2: nextStop.lat, lon2: nextStop.long});
+
+        if (od === 0) return 1.0; // Edge case when O and D are the same.
+
         const ox = distance({lat1: this.stop.lat, lon1: this.stop.long, lat2: this.lat, lon2: this.long});
         const xd = distance({lat1: this.lat, lon1: this.long, lat2: nextStop.lat, lon2: nextStop.long});
         const s  = (ox + xd + od) / 2;
         const hx = (2 / od) * Math.sqrt(s * (s - ox) * (s - xd) * (s - od));
-        var beta = Math.sqrt(Math.pow(xd, 2) - Math.pow(hx, 2)) / od;
+
+        let beta = Math.sqrt(Math.pow(xd, 2) - Math.pow(hx, 2)) / od;
 
         // console.log(`O = [${this.stop.lat}, ${this.stop.long}], X = [${this.lat}, ${this.long}], D = [${nextStop.lat}, ${nextStop.long}]`);
         // console.log(`od: ${od}, ox: ${ox}, xd: ${xd}, s: ${s}, hx: ${hx}, beta: ${beta}`);
