@@ -23,7 +23,28 @@ class Bus {
     }
 
     near(stop) {
-        return distance({ lat1: stop.lat, lon1: stop.long, lat2: this.lat, lon2: this.long}) < nearStopRadius;
+        return distance({lat1: stop.lat, lon1: stop.long, lat2: this.lat, lon2: this.long}) < nearStopRadius;
+    }
+
+    progress(nextStop) {
+        if (!this.stop) {
+            return -1;
+        }
+
+        const od = distance({lat1: this.stop.lat, lon1: this.stop.long, lat2: nextStop.lat, lon2: nextStop.long});
+        const ox = distance({lat1: this.stop.lat, lon1: this.stop.long, lat2: this.lat, lon2: this.long});
+        const xd = distance({lat1: this.lat, lon1: this.long, lat2: nextStop.lat, lon2: nextStop.long});
+        const s  = (ox + xd + od) / 2;
+        const hx = (2 / od) * Math.sqrt(s * (s - ox) * (s - xd) * (s - od));
+        var beta = Math.sqrt(Math.pow(xd, 2) - Math.pow(hx, 2)) / od;
+
+        // console.log(`O = [${this.stop.lat}, ${this.stop.long}], X = [${this.lat}, ${this.long}], D = [${nextStop.lat}, ${nextStop.long}]`);
+        // console.log(`od: ${od}, ox: ${ox}, xd: ${xd}, s: ${s}, hx: ${hx}, beta: ${beta}`);
+
+        beta = beta < 0.0 ? 0.0 : beta;
+        beta = beta > 1.0 ? 1.0 : beta;
+
+        return beta;
     }
 
     toString() {

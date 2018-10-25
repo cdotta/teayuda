@@ -54,6 +54,7 @@ function countStops() {
 // This function updates a bus given params structured as:
 // {id, line, long, lat, timestamp}
 function updateBus(params) {
+    console.log(`Bus update: id: ${params.id}, line: ${params.line}, coords: [${params.long}, ${params.lat}], timestamp: ${params.timestamp}`);
     if (buses[params.id]) {
         buses[params.id].update(params);
     } else {
@@ -65,7 +66,7 @@ function updateBus(params) {
 function reassignStop(bus) {
     const line = lines[bus.line];
     if (!line) {
-        console.log(`There is no information about line ${bus.line}`)
+        console.log(`Whoops: line ${bus.line} is not registered in the system!`)
         return;
     };
 
@@ -104,59 +105,21 @@ function update({id, linea, location, timestamp}) {
     reassignStop(buses[id]);
 }
 
-function _calculateTimeFromBusToNextStop( bus, nextStop ) {
-    // Implement NASA's function
-    return 50;
-}
-
 function _calculateETA({ lineId, stop }) {
+    // TODO: filter out bus if timestamp is too old
+    
     if (!stop) {
-        console.log(`Didn't find bus for line ${lineId}`);
-        return { tea: -1 };
+        console.log(`_calculateETA: Didn't find bus for line ${lineId}`);
+        return {tea: -1};
     }
 
     console.log(`_calculateETA({${lineId}, ${stop.id}})`);
 
-    const bus = stop.buses.find( (bus) => {
-        return bus.line === lineId;
-    });
+    var bus = stop.buses.find( (b) => { return b.line === lineId; });
 
+    // BASE CASE 1: bus is in stop, return eta == 0
     if (bus) {
         console.log(`Bus ${bus.id} found at stop ${stop.id}`);
-        // filter out the bus if timestamp is too old
-        return {
-            id_linea: lineId,
-            id_parada: stop.id,
-            id_bus: bus.id,
-            location: {
-                type: "Point",
-                coordinates: [bus.long, bus.lat],
-            },
-            tea: _calculateTimeFromBusToNextStop( bus, stop ),
-        }
-    } else {
-        const prevStop = stop.findPrevStopByLineId(lineId);
-        const result = _calculateETA( { lineId: lineId, stop: prevStop } );
-        console.log(util.inspect(result, {color: true}));
-        if (result.tea !== -1) {
-            result.tea += stop.getTimeFromPrevStop(prevStop);
-        }
-        return result;
-    }
-}
-
-function calculateETA({ lineId, stopId }) {
-    const stop = stops[stopId];
-
-    if (!lines[lineId]) return { error: "Line not found" };
-    if (!stop) return { error: "Bus stop not found"};
-
-    const bus = stop.buses.find( (bus) => {
-        return bus.line === lineId;
-    });
-
-    if (bus) {
-        console.log(`Bus ${bus.id} just left the stop! (stopId = ${stopId})`);
 
         return {
             id_linea: lineId,
@@ -169,6 +132,54 @@ function calculateETA({ lineId, stopId }) {
             tea: 0,
         }
     }
+
+    const prevStop = stop.findPrevStopByLineId(lineId);
+
+    if (!prevStop) {
+        // Edge case: the stop doesn't have a previous stop at this point. It should. 
+        return {tea: -1};
+    }
+
+    const timeFromPrevStop = stop.getTimeFromPrevStop(prevStop);
+
+    bus = prevStop.buses.find( (b) => { return b.line === lineId; });
+
+    // BASE CASE 2: bus approaching stop, return eta based on progress
+    if (bus) {
+        console.log(`Bus ${bus.id} approaching stop ${stop.id}`);
+
+        return {
+            id_linea: lineId,
+            id_parada: stop.id,
+            id_bus: bus.id,
+            location: {
+                type: "Point",
+                coordinates: [bus.long, bus.lat],
+            },
+            tea: bus.progress(stop) * timeFromPrevStop,
+        }
+    }
+
+    // RECURSIVE CASE
+
+    const result = _calculateETA( { lineId: lineId, stop: prevStop } );
+    console.log(util.inspect(result, {color: true}));
+    if (result.tea !== -1) {
+        result.tea += timeFromPrevStop;
+    }
+
+    return result;
+}
+
+function calculateETA({ lineId, stopId }) {
+    const stop = stops[stopId];
+
+    if (!lines[lineId]) return { error: "Line not found" };
+    if (!stop) return { error: "Bus stop not found"};
+
+    const bus = stop.buses.find( (bus) => {
+        return bus.line === lineId;
+    });
     
     return _calculateETA( { lineId: lineId, stop: stop } );
 }

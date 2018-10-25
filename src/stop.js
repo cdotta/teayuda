@@ -39,7 +39,7 @@ class Stop {
 
     addBus(bus, fromStop) {
         if (fromStop) {
-            console.log(`Bus ${bus} moved from ${fromStop} to ${this}`);
+            console.log("\x1b[36m", `Bus ${bus} moved from ${fromStop} to ${this}`, "\x1b[0m");
             fromStop.removeBus(bus);
 
             if (this.links[fromStop.id]) { // This means that the bus comes from the previous stop.
