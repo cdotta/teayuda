@@ -1,4 +1,5 @@
 const { ExpFilter } = require('./filter');
+const { maxBusTimeBetweenStops, minBusTimeBetweenStops } = require('../constants');
 
 class Link {
     constructor(fromStop, line) {
@@ -44,7 +45,7 @@ class Stop {
 
             if (this.links[fromStop.id]) { // This means that the bus comes from the previous stop.
                 const deltaTime = bus.timestamp - bus.stopArrivalTime;
-                if (deltaTime <= 300 && deltaTime >= 15) {
+                if (deltaTime <= maxBusTimeBetweenStops && deltaTime >= minBusTimeBetweenStops) {
                     this.links[fromStop.id].updateTime(deltaTime);
                 }
             }

@@ -3,4 +3,6 @@ module.exports = {
   localIP: process.env.LOCAL_URL || '192.168.1.5',
   port: process.env.PORT || 3000,
   nearStopRadius: 20,
+  maxBusTimeBetweenStops: 10 * 60,
+  minBusTimeBetweenStops: 15,
 };
