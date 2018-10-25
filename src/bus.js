@@ -3,7 +3,7 @@ const { distance } = require('./geodistance');
 
 class Bus {
     constructor({id, line, long, lat, timestamp}) {
-        this.id = id;
+        this.id = `${id}-${line}`;
         this.line = line;
         this.long = long;
         this.lat = lat;
