@@ -8,6 +8,8 @@ const stops = {};
 const lines = {};
 const buses = {};
 
+const unregisteredLines = new Set();
+
 // This function loads path information in the form:
 //   "trayectos": [
 //     {
@@ -55,7 +57,7 @@ function countStops() {
 // This function updates a bus given params structured as:
 // {id, line, long, lat, timestamp}
 function updateBus(params) {
-    console.log(`Bus update: id: ${params.id}, line: ${params.line}, coords: [${params.long}, ${params.lat}], timestamp: ${params.timestamp}`);
+    // console.debug(`Bus update: id: ${params.id}, line: ${params.line}, coords: [${params.long}, ${params.lat}], timestamp: ${params.timestamp}`);
     if (buses[params.id]) {
         buses[params.id].update(params);
     } else {
@@ -67,7 +69,10 @@ function updateBus(params) {
 function reassignStop(bus) {
     const line = lines[bus.line];
     if (!line) {
-        console.log(`Whoops: line ${bus.line} is not registered in the system!`)
+        if (!unregisteredLines.has(bus.line)) {
+            unregisteredLines.add(bus.line);
+            console.log(`Whoops: line ${bus.line} is not registered in the system!`);
+        }
         return;
     };
 
