@@ -1,24 +1,22 @@
+const { ExpFilter } = require('./filter');
+
 class Link {
     constructor(fromStop, line) {
         this.lines = [line];
         this.fromStop = fromStop;
-        this.times = [];
+        this.filter = new ExpFilter();
     }
 
     addLine(line) {
         this.lines.push(line);
     }
 
-    addTime(time) {
-        this.times.push(time);
+    updateTime(time) {
+        this.filter.update(time);
     }
 
     getEstimatedTime() {
-        return 60;
-        // const sum = this.times.reduce((accumulator, time) => {
-        //     return accumulator + time;
-        // }, 0);
-        // return sum / this.times.length;
+        return this.filter.getEstimation();
     }
 }
 
@@ -47,7 +45,7 @@ class Stop {
             if (this.links[fromStop.id]) { // This means that the bus comes from the previous stop.
                 const deltaTime = bus.timestamp - bus.stopArrivalTime;
                 if (deltaTime <= 300 && deltaTime >= 15) {
-                    this.links[fromStop.id].addTime(deltaTime);
+                    this.links[fromStop.id].updateTime(deltaTime);
                 }
             }
         }
