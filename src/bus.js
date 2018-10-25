@@ -7,7 +7,7 @@ class Bus {
         this.line = line;
         this.long = long;
         this.lat = lat;
-        this.timestamp = timestamp;
+        this.timestamp = new Date(timestamp).getTime() / 1000;
         this.stop = null;
         this.stopArrivalTime = null;
     }
@@ -19,7 +19,7 @@ class Bus {
         this.line = line;
         this.long = long;
         this.lat = lat;
-        this.timestamp = timestamp;
+        this.timestamp = new Date(timestamp).getTime() / 1000;
     }
 
     near(stop) {

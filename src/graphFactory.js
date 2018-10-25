@@ -127,6 +127,7 @@ function _calculateETA({ lineId, stop }) {
     const bus = prevStop.buses.find( (b) => { return b.line === lineId; });
 
     // BASE CASE 1: bus approaching stop, return eta based on progress
+
     if (bus) {
         console.log(`Bus ${bus.id} approaching stop ${stop.id}`);
 
