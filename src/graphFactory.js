@@ -115,24 +115,6 @@ function _calculateETA({ lineId, stop }) {
 
     console.log(`_calculateETA({${lineId}, ${stop.id}})`);
 
-    var bus = stop.buses.find( (b) => { return b.line === lineId; });
-
-    // BASE CASE 1: bus is in stop, return eta == 0
-    if (bus) {
-        console.log(`Bus ${bus.id} found at stop ${stop.id}`);
-
-        return {
-            id_linea: lineId,
-            id_parada: stop.id,
-            id_bus: bus.id,
-            location: {
-                type: "Point",
-                coordinates: [bus.long, bus.lat],
-            },
-            tea: 0,
-        }
-    }
-
     const prevStop = stop.findPrevStopByLineId(lineId);
 
     if (!prevStop) {
@@ -142,9 +124,9 @@ function _calculateETA({ lineId, stop }) {
 
     const timeFromPrevStop = stop.getTimeFromPrevStop(prevStop);
 
-    bus = prevStop.buses.find( (b) => { return b.line === lineId; });
+    const bus = prevStop.buses.find( (b) => { return b.line === lineId; });
 
-    // BASE CASE 2: bus approaching stop, return eta based on progress
+    // BASE CASE 1: bus approaching stop, return eta based on progress
     if (bus) {
         console.log(`Bus ${bus.id} approaching stop ${stop.id}`);
 
