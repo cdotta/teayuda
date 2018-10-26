@@ -1,5 +1,5 @@
 const util = require('util');
-const { maxBusTimeBetweenStops } = require('constants');
+const { maxBusTimeBetweenStops } = require('../constants');
 
 const Bus = require('./bus');
 const Stop = require('./stop');
@@ -131,7 +131,7 @@ function _calculateETA({ lineId, stop }) {
     const timeFromPrevStop = stop.getTimeFromPrevStop(prevStop);
 
     const bus = prevStop.buses.find( (b) => {
-        const timeDiff = bus.stopArrivalTime - bus.timestamp;
+        const timeDiff = b.timestamp - b.stopArrivalTime;
         return (b.line === lineId) && (timeDiff < maxBusTimeBetweenStops);
     });
 
